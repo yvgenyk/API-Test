@@ -31,9 +31,9 @@ class Ui_Dialog(object):
         self.gridLayoutWidget.setObjectName(_fromUtf8("gridLayoutWidget"))
         self.gridLayout = QtGui.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        self.pushButton = QtGui.QPushButton(self.gridLayoutWidget)
-        self.pushButton.setObjectName(_fromUtf8("pushButton"))
-        self.gridLayout.addWidget(self.pushButton, 1, 0, 1, 1)
+        self.startBtn = QtGui.QPushButton(self.gridLayoutWidget)
+        self.startBtn.setObjectName(_fromUtf8("startBtn"))
+        self.gridLayout.addWidget(self.startBtn, 1, 0, 1, 1)
         self.pushButton_2 = QtGui.QPushButton(self.gridLayoutWidget)
         self.pushButton_2.setObjectName(_fromUtf8("pushButton_2"))
         self.gridLayout.addWidget(self.pushButton_2, 2, 0, 1, 1)
@@ -81,7 +81,7 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(_translate("Dialog", "Main", None))
-        self.pushButton.setText(_translate("Dialog", "Start", None))
+        self.startBtn.setText(_translate("Dialog", "Start", None))
         self.pushButton_2.setText(_translate("Dialog", "Quit", None))
         self.fileLoad.setText(_translate("Dialog", "Load", None))
         self.label.setText(_translate("Dialog", "Secret Key", None))

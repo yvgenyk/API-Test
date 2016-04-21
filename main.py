@@ -10,7 +10,7 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
         super(TestApp, self).__init__(parent)
         self.setupUi(self)
         self.json_work = None
-        self.pushButton.clicked.connect(self.get_account)
+        self.startBtn.clicked.connect(self.start_test)
         self.pushButton_2.clicked.connect(self.close_application)
         self.fileLoad.clicked.connect(self.file_open)
         self.lineEdit.setText('')
@@ -18,7 +18,7 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
         self.lineEdit_3.setText('')
         
         
-    def get_account(self):
+    def start_test(self):
         
         secretKey = self.lineEdit.text()
         publicKey = self.lineEdit_2.text()
@@ -56,7 +56,72 @@ class JsonCreator(QtGui.QMainWindow, jsoncreator.Ui_JsonCreator):
         super(JsonCreator, self).__init__(parent)
         self.setupUi(self)
         self.json_work = None
+        self.doneBtn.clicked.connect(self.close_window)
+        self.loadExFileBtn.clicked.connect(self.load_file)
+        self.createNewBtn.clicked.connect(self.new_file)
+        self.saveBtn.clicked.connect(self.save_file)
+        self.addNewLine.clicked.connect(self.edit_file)
+        self.saveNewToFile.clicked.connect(self.saveNewLine_file)
         
+        
+    def close_window(self):
+        self.close()
+        
+    def load_file(self):
+        nameOfFile = QtGui.QFileDialog.getOpenFileName(self, 'Open File', "*.json")
+        loadedFile = open(nameOfFile, 'r')
+        
+        with loadedFile:
+            text = loadedFile.read()
+            
+            textSplit = text.split('oid')
+            index = len(textSplit)
+            self.textEditFileLoad.setText(text)
+        
+            
+    def new_file(self):
+        self.textEditFileLoad.setText('{"data":[{"additional_data":{"oid":"1"},}]}')
+        
+    def save_file(self):
+        fileName = QtGui.QFileDialog.getSaveFileName(self, 'Save File', '.json','*.json')
+        file = open(fileName, 'w')
+        text = self.textEditFileLoad.toPlainText()
+        file.write(text)
+        file.close()
+        
+        
+    def edit_file(self):
+        self.textEditFileLoad.setText('"method":"<GET/POST>","address":"<enter address>"}')
+        
+    def saveNewLine_file(self):
+        
+        #read the file
+        nameOfFile = QtGui.QFileDialog.getOpenFileName(self, 'Open File', "*.json")
+        loadedFile = open(nameOfFile, 'r')
+        
+        #convert to text
+        with loadedFile:
+            text = loadedFile.read()
+            
+        #find index number
+        textSplit = text.split('oid')
+        newIndex = len(textSplit)
+        
+        #prepare to write
+        loadedFile = open(nameOfFile, 'w')
+        currentText = self.textEditFileLoad.toPlainText()
+        
+        #find the place where to add the new line
+        fileEnd = len(text)-1
+        
+        #create new text
+        newText = text[:fileEnd] + ',{"additional_data":{"oid":"' + str(newIndex) + '"},' + currentText + text[fileEnd:]
+        
+        #overwrite the existing file with new content
+        loadedFile.write(newText)
+        loadedFile.close()
+        
+        self.textEditFileLoad.setText(newText)
         
         
 def main():

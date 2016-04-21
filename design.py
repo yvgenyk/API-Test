@@ -37,9 +37,9 @@ class Ui_Dialog(object):
         self.pushButton_2 = QtGui.QPushButton(self.gridLayoutWidget)
         self.pushButton_2.setObjectName(_fromUtf8("pushButton_2"))
         self.gridLayout.addWidget(self.pushButton_2, 2, 0, 1, 1)
-        self.pushButton_3 = QtGui.QPushButton(self.gridLayoutWidget)
-        self.pushButton_3.setObjectName(_fromUtf8("pushButton_3"))
-        self.gridLayout.addWidget(self.pushButton_3, 0, 0, 1, 1)
+        self.fileLoad = QtGui.QPushButton(self.gridLayoutWidget)
+        self.fileLoad.setObjectName(_fromUtf8("fileLoad"))
+        self.gridLayout.addWidget(self.fileLoad, 0, 0, 1, 1)
         self.textEdit = QtGui.QTextEdit(self.gridLayoutWidget)
         self.textEdit.setObjectName(_fromUtf8("textEdit"))
         self.gridLayout.addWidget(self.textEdit, 3, 0, 1, 1)
@@ -75,22 +75,18 @@ class Ui_Dialog(object):
         self.lineEdit_3.setObjectName(_fromUtf8("lineEdit_3"))
         self.horizontalLayout_3.addWidget(self.lineEdit_3)
         self.verticalLayout.addLayout(self.horizontalLayout_3)
-        self.fileLoad = QtGui.QPushButton(Dialog)
-        self.fileLoad.setGeometry(QtCore.QRect(580, 250, 101, 61))
-        self.fileLoad.setObjectName(_fromUtf8("fileLoad"))
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog", None))
+        Dialog.setWindowTitle(_translate("Dialog", "Main", None))
         self.pushButton.setText(_translate("Dialog", "Start", None))
         self.pushButton_2.setText(_translate("Dialog", "Quit", None))
-        self.pushButton_3.setText(_translate("Dialog", "PushButton", None))
+        self.fileLoad.setText(_translate("Dialog", "Load", None))
         self.label.setText(_translate("Dialog", "Secret Key", None))
         self.label_2.setText(_translate("Dialog", "Public Key ", None))
         self.label_3.setText(_translate("Dialog", "    http:     ", None))
-        self.fileLoad.setText(_translate("Dialog", "Load File", None))
 
 
 if __name__ == "__main__":

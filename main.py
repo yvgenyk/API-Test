@@ -1,13 +1,15 @@
 from PyQt4 import QtGui, QtCore
 import sys
 import design
+import jsoncreator
 import requests
 import re
 
-class ExampleApp(QtGui.QMainWindow, design.Ui_Dialog):
+class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
     def __init__(self, parent=None):
-        super(ExampleApp, self).__init__(parent)
+        super(TestApp, self).__init__(parent)
         self.setupUi(self)
+        self.json_work = None
         self.pushButton.clicked.connect(self.get_account)
         self.pushButton_2.clicked.connect(self.close_application)
         self.fileLoad.clicked.connect(self.file_open)
@@ -34,13 +36,8 @@ class ExampleApp(QtGui.QMainWindow, design.Ui_Dialog):
         
         
     def file_open(self):
-        name = QtGui.QFileDialog.getOpenFileName(self, 'Open File')
-        file = open(name, 'r')
-        
-        with file:
-            text = file.read()
-            self.textEdit.setText(text)
-        
+       self.json_work = JsonCreator()
+       self.json_work.show()
         
         
     def close_application(self):
@@ -53,9 +50,18 @@ class ExampleApp(QtGui.QMainWindow, design.Ui_Dialog):
             pass
         
         
+        
+class JsonCreator(QtGui.QMainWindow, jsoncreator.Ui_JsonCreator):
+    def __init__(self, parent=None):
+        super(JsonCreator, self).__init__(parent)
+        self.setupUi(self)
+        self.json_work = None
+        
+        
+        
 def main():
     app = QtGui.QApplication(sys.argv)
-    form = ExampleApp()
+    form = TestApp()
     form.show()
     app.exec_()
     

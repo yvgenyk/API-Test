@@ -4,11 +4,19 @@ import design
 import jsoncreator
 import requests
 import re
+import json
+from doctest import testfile
+from idlelib.ClassBrowser import file_open
 
 class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
     def __init__(self, parent=None):
         super(TestApp, self).__init__(parent)
         self.setupUi(self)
+        
+        global testFile
+        testFile = None
+        
+        
         self.json_work = None
         self.startBtn.clicked.connect(self.start_test)
         self.pushButton_2.clicked.connect(self.close_application)
@@ -16,29 +24,67 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
         self.lineEdit.setText('')
         self.lineEdit_2.setText('')
         self.lineEdit_3.setText('')
-        
+    
         
     def start_test(self):
         
-        secretKey = self.lineEdit.text()
-        publicKey = self.lineEdit_2.text()
-        httpAddress = self.lineEdit_3.text()
+        startFlag = 0
         
-        payload = {'secret_key':secretKey, 'public_key':publicKey}
-        r = requests.get(httpAddress + 'account', params=payload, verify=False)
+        if (testFile):
+            startFlag = 1
+        else:
+            choice = QtGui.QMessageBox.question(self, 'No File', "No file was loaded, would you like to load?", QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
         
-        index = r.text.split('"')
-        userID = index[17]
-        userName = index[21]
-        userUUID = index[29]
+            if choice == QtGui.QMessageBox.Yes:
+                self.json_work = JsonCreator()
+                self.json_work.show()
+            else:
+                pass
         
-        self.textEdit.setText(r.text+ "\n\n\n" + "User ID: " + userID + "\nUser Name: " + userName + "\nUser UUID: " + userUUID)
+        
+        
+        if startFlag == 1:
+            
+            secretKey = self.lineEdit.text()
+            publicKey = self.lineEdit_2.text()
+            httpAddress = self.lineEdit_3.text()
+            
+            with open(testFile) as codeLines_data:
+                data = json.load(codeLines_data)
+                
+            for lineIndex in range(len(data["data"])):
+                #Get line code
+                if data["data"][lineIndex]["method"] == 'get' or data["data"][lineIndex]["method"] == 'GET':
+                    print("we have a getter in line: " + str(lineIndex + 1))
+        
+                    payload = {'secret_key':secretKey, 'public_key':publicKey}
+                    r = requests.get(httpAddress + data["data"][lineIndex]["address"], params=payload, verify=False)
+                    
+                    self.textEdit.setText(r.text)
+                    
+                    
+                #Post line code
+                if data["data"][lineIndex]["method"] == 'post' or data["data"][lineIndex]["method"] == 'POST': 
+                    print("we have a poster in line: " + str(lineIndex + 1))
+                    
+                    
+                #Delete line code
+                if data["data"][lineIndex]["method"] == 'del': 
+                    print("we have a deleter in line: " + str(lineIndex + 1))
+    
+            
+        #index = r.text.split('"')
+        #userID = index[17]
+        #userName = index[21]
+        #userUUID = index[29]
+        
         
         
     def file_open(self):
        self.json_work = JsonCreator()
        self.json_work.show()
-        
+       
+       
         
     def close_application(self):
         #popup messegae before exiting
@@ -68,8 +114,9 @@ class JsonCreator(QtGui.QMainWindow, jsoncreator.Ui_JsonCreator):
         self.close()
         
     def load_file(self):
-        nameOfFile = QtGui.QFileDialog.getOpenFileName(self, 'Open File', "*.json")
-        loadedFile = open(nameOfFile, 'r')
+        global testFile
+        testFile = QtGui.QFileDialog.getOpenFileName(self, 'Open File', "*.json")
+        loadedFile = open(testFile, 'r')
         
         with loadedFile:
             text = loadedFile.read()
@@ -80,7 +127,7 @@ class JsonCreator(QtGui.QMainWindow, jsoncreator.Ui_JsonCreator):
         
             
     def new_file(self):
-        self.textEditFileLoad.setText('{"data":[{"additional_data":{"oid":"1"},}]}')
+        self.textEditFileLoad.setText('{"data":[{"oid":"1",}]}')
         
     def save_file(self):
         fileName = QtGui.QFileDialog.getSaveFileName(self, 'Save File', '.json','*.json')
@@ -112,10 +159,10 @@ class JsonCreator(QtGui.QMainWindow, jsoncreator.Ui_JsonCreator):
         currentText = self.textEditFileLoad.toPlainText()
         
         #find the place where to add the new line
-        fileEnd = len(text)-1
+        fileEnd = len(text)-2
         
         #create new text
-        newText = text[:fileEnd] + ',{"additional_data":{"oid":"' + str(newIndex) + '"},' + currentText + text[fileEnd:]
+        newText = text[:fileEnd] + ',{"oid":"' + str(newIndex) + '",' + currentText + text[fileEnd:]
         
         #overwrite the existing file with new content
         loadedFile.write(newText)

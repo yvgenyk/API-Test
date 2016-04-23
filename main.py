@@ -7,7 +7,7 @@ import re
 import json
 from doctest import testfile
 from idlelib.ClassBrowser import file_open
-
+#Hello!
 class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
     def __init__(self, parent=None):
         super(TestApp, self).__init__(parent)

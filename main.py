@@ -62,14 +62,41 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                 data = json.load(codeLines_data)
                 
             for lineIndex in range(len(data["data"])):
+                
+                
+                
+                
                 #Get line code
                 if data["data"][lineIndex]["method"] == 'get' or data["data"][lineIndex]["method"] == 'GET':
-                    print("we have a getter in line: " + str(lineIndex + 1))
         
                     payload = {'secret_key':secretKey, 'public_key':publicKey}
                     r = requests.get(httpAddress + data["data"][lineIndex]["address"], params=payload, verify=False)
                     
-                    self.textEdit.setText(r.text)
+                    self.textEdit.setText(r.text + "\n" + str(r.json()["results"]["account_username"]) + "\n" + str(len(data["data"][lineIndex])))
+                    
+                    if len(data["data"][lineIndex]['find']) >= 1:
+                        for findIndex in range(len(data["data"][lineIndex]['find'])):
+                            if data["data"][lineIndex]['find'][findIndex] in r.text:
+                                pass
+                            else:
+                                print("\n\n There was a problem: " + data["data"][lineIndex]['find'][findIndex] + " wasn't founded in :\n" + r.text)
+                    
+                    if len(data["data"][lineIndex]['check']) >= 1:
+                        for checkIndex in range(len(data["data"][lineIndex]['check'])):
+                            varToCheck = data["data"][lineIndex]["check"][checkIndex]
+                           
+                            if data["data"][lineIndex]['value'][checkIndex] == str(r.json()["status"][varToCheck]):
+                                pass
+                            else:
+                                print("\n\n There was a problem: " + data["data"][lineIndex]["check"][checkIndex] + 
+                                      ": " + data["data"][lineIndex]["value"][checkIndex] + " wasn't founded in :\n" + r.text)
+                    
+                    
+                    
+                    
+                    
+                    
+                    
                     
                     
                 #Post line code

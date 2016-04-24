@@ -7,11 +7,18 @@ import re
 import json
 from doctest import testfile
 from idlelib.ClassBrowser import file_open
+from PyQt4.Qt import QListWidgetItem
 
 class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
     def __init__(self, parent=None):
         super(TestApp, self).__init__(parent)
         self.setupUi(self)
+        
+        global txtFilePath
+        txtFilePath = []
+        
+        global testFilePath
+        testFilePath = []
         
         global testFile
         testFile = None
@@ -24,6 +31,8 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
         self.lineEdit.setText('')
         self.lineEdit_2.setText('')
         self.lineEdit_3.setText('')
+        self.loadTxtBtn.clicked.connect(self.open_txt)
+        self.loadFileBtn.clicked.connect(self.open_test_files)
     
         
     def start_test(self):
@@ -94,6 +103,21 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
             sys.exit()
         else:
             pass
+        
+    def open_txt(self):
+        global txtFilePath
+        txtFile = QtGui.QFileDialog.getOpenFileName(self, 'Open File', "*.txt")
+        txtFilePath.append(txtFile)
+        fileName = txtFile.split('/')
+        self.txtFilesList.addItem('%s' % fileName[len(fileName)-1])
+        
+    def open_test_files(self):
+        global testFilePath
+        testFile = QtGui.QFileDialog.getOpenFileName(self, 'Open File')
+        testFilePath.append(testFile)
+        fileName = testFile.split('/')
+        self.testFilesList.addItem('%s' % fileName[len(fileName)-1])
+        
         
         
         

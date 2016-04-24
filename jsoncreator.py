@@ -2,7 +2,8 @@
 
 # Form implementation generated from reading ui file 'jsoncreator.ui'
 #
-# Created by: PyQt4 UI code generator 4.11.4
+# Created: Sun Apr 24 20:35:35 2016
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -25,30 +26,48 @@ except AttributeError:
 class Ui_JsonCreator(object):
     def setupUi(self, JsonCreator):
         JsonCreator.setObjectName(_fromUtf8("JsonCreator"))
-        JsonCreator.resize(744, 412)
+        JsonCreator.resize(719, 460)
         self.verticalLayoutWidget = QtGui.QWidget(JsonCreator)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(0, 0, 741, 411))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 10, 701, 441))
         self.verticalLayoutWidget.setObjectName(_fromUtf8("verticalLayoutWidget"))
         self.verticalLayout = QtGui.QVBoxLayout(self.verticalLayoutWidget)
+        self.verticalLayout.setMargin(0)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.createNewBtn = QtGui.QPushButton(self.verticalLayoutWidget)
+        self.createNewBtn.setMinimumSize(QtCore.QSize(97, 60))
+        self.createNewBtn.setMaximumSize(QtCore.QSize(97, 60))
         self.createNewBtn.setObjectName(_fromUtf8("createNewBtn"))
         self.horizontalLayout.addWidget(self.createNewBtn)
         self.addNewLine = QtGui.QPushButton(self.verticalLayoutWidget)
+        self.addNewLine.setMinimumSize(QtCore.QSize(97, 60))
+        self.addNewLine.setMaximumSize(QtCore.QSize(97, 60))
         self.addNewLine.setObjectName(_fromUtf8("addNewLine"))
         self.horizontalLayout.addWidget(self.addNewLine)
         self.saveNewToFile = QtGui.QPushButton(self.verticalLayoutWidget)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(97)
+        sizePolicy.setVerticalStretch(60)
+        sizePolicy.setHeightForWidth(self.saveNewToFile.sizePolicy().hasHeightForWidth())
+        self.saveNewToFile.setSizePolicy(sizePolicy)
+        self.saveNewToFile.setMinimumSize(QtCore.QSize(97, 60))
+        self.saveNewToFile.setMaximumSize(QtCore.QSize(97, 60))
         self.saveNewToFile.setObjectName(_fromUtf8("saveNewToFile"))
         self.horizontalLayout.addWidget(self.saveNewToFile)
         self.loadExFileBtn = QtGui.QPushButton(self.verticalLayoutWidget)
+        self.loadExFileBtn.setMinimumSize(QtCore.QSize(97, 60))
+        self.loadExFileBtn.setMaximumSize(QtCore.QSize(97, 60))
         self.loadExFileBtn.setObjectName(_fromUtf8("loadExFileBtn"))
         self.horizontalLayout.addWidget(self.loadExFileBtn)
         self.saveBtn = QtGui.QPushButton(self.verticalLayoutWidget)
+        self.saveBtn.setMinimumSize(QtCore.QSize(97, 60))
+        self.saveBtn.setMaximumSize(QtCore.QSize(97, 60))
         self.saveBtn.setObjectName(_fromUtf8("saveBtn"))
         self.horizontalLayout.addWidget(self.saveBtn)
         self.doneBtn = QtGui.QPushButton(self.verticalLayoutWidget)
+        self.doneBtn.setMinimumSize(QtCore.QSize(97, 60))
+        self.doneBtn.setMaximumSize(QtCore.QSize(97, 60))
         self.doneBtn.setObjectName(_fromUtf8("doneBtn"))
         self.horizontalLayout.addWidget(self.doneBtn)
         self.verticalLayout.addLayout(self.horizontalLayout)
@@ -62,19 +81,9 @@ class Ui_JsonCreator(object):
     def retranslateUi(self, JsonCreator):
         JsonCreator.setWindowTitle(_translate("JsonCreator", "File Work", None))
         self.createNewBtn.setText(_translate("JsonCreator", "Create New", None))
-        self.addNewLine.setText(_translate("JsonCreator", "Create New Test Line", None))
-        self.saveNewToFile.setText(_translate("JsonCreator", "Save New Line to File", None))
+        self.addNewLine.setText(_translate("JsonCreator", "New Test Line", None))
+        self.saveNewToFile.setText(_translate("JsonCreator", "Add New Line", None))
         self.loadExFileBtn.setText(_translate("JsonCreator", "Load File", None))
         self.saveBtn.setText(_translate("JsonCreator", "Save", None))
         self.doneBtn.setText(_translate("JsonCreator", "Done", None))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtGui.QApplication(sys.argv)
-    JsonCreator = QtGui.QDialog()
-    ui = Ui_JsonCreator()
-    ui.setupUi(JsonCreator)
-    JsonCreator.show()
-    sys.exit(app.exec_())
 

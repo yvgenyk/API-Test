@@ -1,2 +1,15 @@
-{"data":[{"oid":"1","method":"GET","address":"account","find":["credits","role"],"check":["code","msg"],"value":["0","ok"]},
-		{"oid":"2","method":"GET","address":"tools/quote","params":["resources","secret_key","public_key","wordcount","source_language","target_language","service","expertise","proofreading","currency"],"find":[],"check":[],"value":[]}]}
+{"data":[{"oid":"1","method":"GET","address":"account","params":["secret_key","public_key"],"find":["credits","role"],"check":["code","msg"],"value":["0","ok"]},
+		{"oid":"2","method":"GET","address":"tools/quote",
+		"params":[
+		"secret_key",
+		"public_key",
+		{"name":"resources","value":""},
+		{"name":"wordcount","value":"222"},
+		{"name":"source_language","value":"tr-tr"},
+		{"name":"target_language","value":"it-it"},
+		{"name":"service","value":""},
+		{"name":"expertise","value":""},
+		{"name":"proofreading","value":""},
+		{"name":"currency","value":""}
+		],
+		"find":[],"check":[],"value":[]}]}

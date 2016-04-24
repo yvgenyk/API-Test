@@ -57,22 +57,33 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
             secretKey = self.lineEdit.text()
             publicKey = self.lineEdit_2.text()
             httpAddress = self.lineEdit_3.text()
+            payload = dict() 
             
             with open(testFile) as codeLines_data:
                 data = json.load(codeLines_data)
-                
-            for lineIndex in range(len(data["data"])):
-                
+            for lineIndex in range(len(data["data"])):  
                 
                 
                 
                 #Get line code
                 if data["data"][lineIndex]["method"] == 'get' or data["data"][lineIndex]["method"] == 'GET':
-        
-                    payload = {'secret_key':secretKey, 'public_key':publicKey}
-                    r = requests.get(httpAddress + data["data"][lineIndex]["address"], params=payload, verify=False)
+                    #payload initialization
+                    for payIndex in range(len(data["data"][lineIndex]['params'])):
                     
-                    self.textEdit.setText(r.text + "\n" + str(r.json()["results"]["account_username"]) + "\n" + str(len(data["data"][lineIndex])))
+                        if data["data"][lineIndex]["params"][payIndex] == "secret_key":
+                            payload[data["data"][lineIndex]["params"][payIndex]] = secretKey
+                            
+                        elif data["data"][lineIndex]["params"][payIndex] == "public_key":
+                            payload[data["data"][lineIndex]["params"][payIndex]] = publicKey
+                            
+                        else:
+                            payload[data["data"][lineIndex]["params"][payIndex]['name']] = data["data"][lineIndex]["params"][payIndex]['value']
+                            
+                            
+                    r = requests.get(httpAddress + data["data"][lineIndex]["address"], params=payload, verify=False)
+                    print("\n\n\n\n" + r.url + "\n\n")
+                    
+                    self.textEdit.setText(r.text + "\n" + str(len(data["data"][lineIndex])))
                     
                     if len(data["data"][lineIndex]['find']) >= 1:
                         for findIndex in range(len(data["data"][lineIndex]['find'])):

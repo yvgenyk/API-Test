@@ -2,8 +2,7 @@
 
 # Form implementation generated from reading ui file 'design.ui'
 #
-# Created: Sun Apr 24 20:28:53 2016
-#      by: PyQt4 UI code generator 4.10.4
+# Created by: PyQt4 UI code generator 4.11.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -31,7 +30,6 @@ class Ui_Dialog(object):
         self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 10, 729, 571))
         self.gridLayoutWidget.setObjectName(_fromUtf8("gridLayoutWidget"))
         self.gridLayout = QtGui.QGridLayout(self.gridLayoutWidget)
-        self.gridLayout.setMargin(0)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.textEdit = QtGui.QTextEdit(self.gridLayoutWidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Expanding)
@@ -100,7 +98,6 @@ class Ui_Dialog(object):
         self.horizontalLayoutWidget.setGeometry(QtCore.QRect(760, 10, 321, 311))
         self.horizontalLayoutWidget.setObjectName(_fromUtf8("horizontalLayoutWidget"))
         self.horizontalLayout_6 = QtGui.QHBoxLayout(self.horizontalLayoutWidget)
-        self.horizontalLayout_6.setMargin(0)
         self.horizontalLayout_6.setObjectName(_fromUtf8("horizontalLayout_6"))
         self.verticalLayout_3 = QtGui.QVBoxLayout()
         self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
@@ -148,6 +145,10 @@ class Ui_Dialog(object):
         self.line.setFrameShape(QtGui.QFrame.VLine)
         self.line.setFrameShadow(QtGui.QFrame.Sunken)
         self.line.setObjectName(_fromUtf8("line"))
+        self.progressBar = QtGui.QProgressBar(Dialog)
+        self.progressBar.setGeometry(QtCore.QRect(770, 330, 317, 21))
+        self.progressBar.setProperty("value", 0)
+        self.progressBar.setObjectName(_fromUtf8("progressBar"))
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -162,4 +163,14 @@ class Ui_Dialog(object):
         self.fileLoad.setText(_translate("Dialog", "Load Test File", None))
         self.loadTxtBtn.setText(_translate("Dialog", "Load Text Files", None))
         self.loadFileBtn.setText(_translate("Dialog", "Load Files", None))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtGui.QApplication(sys.argv)
+    Dialog = QtGui.QDialog()
+    ui = Ui_Dialog()
+    ui.setupUi(Dialog)
+    Dialog.show()
+    sys.exit(app.exec_())
 

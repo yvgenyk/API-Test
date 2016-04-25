@@ -5,6 +5,7 @@ import jsoncreator
 import requests
 import re
 import json
+import time
 from doctest import testfile
 from idlelib.ClassBrowser import file_open
 from PyQt4.Qt import QListWidgetItem
@@ -16,6 +17,12 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
         
         global txtFilePath
         txtFilePath = []
+        
+        global txtFileUUID
+        txtFileUUID = []
+        
+        global uploadFileUUID
+        uploadFileUUID = []
         
         global testFilePath
         testFilePath = []
@@ -54,10 +61,12 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
         
         if startFlag == 1:
             
+            self.textEdit.append("NEW TEST\n")
             secretKey = self.lineEdit.text()
             publicKey = self.lineEdit_2.text()
             httpAddress = self.lineEdit_3.text()
             payload = dict() 
+            errorFlag = 0
             
             with open(testFile) as codeLines_data:
                 data = json.load(codeLines_data)
@@ -68,6 +77,7 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                 #Get line code
                 if data["data"][lineIndex]["method"] == 'get' or data["data"][lineIndex]["method"] == 'GET':
                     #payload initialization
+                    payload = dict()
                     for payIndex in range(len(data["data"][lineIndex]['params'])):
                     
                         if data["data"][lineIndex]["params"][payIndex] == "secret_key":
@@ -81,16 +91,20 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                             
                             
                     r = requests.get(httpAddress + data["data"][lineIndex]["address"], params=payload, verify=False)
-                    print("\n\n\n\n" + r.url + "\n\n")
-                    
-                    self.textEdit.setText(r.text + "\n" + str(len(data["data"][lineIndex])))
+                    #print("\n\n\n\n" + r.url + "\n\n")
+                    self.textEdit.append("GET Request \"" + data["data"][lineIndex]['title'] + "\":")
+                    self.textEdit.append(r.url + "\n")
+                    self.textEdit.append("API response:")
+                    self.textEdit.append(r.text)
+                    self.textEdit.append("\n")
                     
                     if len(data["data"][lineIndex]['find']) >= 1:
                         for findIndex in range(len(data["data"][lineIndex]['find'])):
                             if data["data"][lineIndex]['find'][findIndex] in r.text:
                                 pass
                             else:
-                                print("\n\n There was a problem: " + data["data"][lineIndex]['find'][findIndex] + " wasn't founded in :\n" + r.text)
+                                self.textEdit.append("\n\n There was a problem: " + data["data"][lineIndex]['find'][findIndex] + " wasn't found in :\n" + r.text)
+                                errorFlag = 1
                     
                     if len(data["data"][lineIndex]['check']) >= 1:
                         for checkIndex in range(len(data["data"][lineIndex]['check'])):
@@ -99,8 +113,9 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                             if data["data"][lineIndex]['value'][checkIndex] == str(r.json()["status"][varToCheck]):
                                 pass
                             else:
-                                print("\n\n There was a problem: " + data["data"][lineIndex]["check"][checkIndex] + 
-                                      ": " + data["data"][lineIndex]["value"][checkIndex] + " wasn't founded in :\n" + r.text)
+                                self.textEdit.append("\n\n There was a problem: " + data["data"][lineIndex]["check"][checkIndex] + 
+                                      ": " + data["data"][lineIndex]["value"][checkIndex] + " wasn't found in :\n" + r.text)
+                                errorFlag = 1
                     
                     
                     
@@ -112,19 +127,89 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                     
                 #Post line code
                 if data["data"][lineIndex]["method"] == 'post' or data["data"][lineIndex]["method"] == 'POST': 
-                    print("we have a poster in line: " + str(lineIndex + 1))
+                    payload = dict()
+                    for payIndex in range(len(data["data"][lineIndex]['params'])):
                     
+                        if data["data"][lineIndex]["params"][payIndex] == "secret_key":
+                            payload[data["data"][lineIndex]["params"][payIndex]] = secretKey
+                            
+                        elif data["data"][lineIndex]["params"][payIndex] == "public_key":
+                            payload[data["data"][lineIndex]["params"][payIndex]] = publicKey
+                            
+                            
+                        #Text upload  
+                        elif data["data"][lineIndex]["params"][payIndex]["name"] == "textrsc":
+                            
+                            global txtFilePath
+                            global txtFileUUID
+                            
+                            if len(txtFilePath) == 0:
+                                self.textEdit.append("No text file was added\n")
+                                
+                            elif len(txtFilePath) >= 1:
+                                
+                                for txtIndex in range(len(txtFilePath)):
+                                
+                                    loadedFile = open(txtFilePath[txtIndex], 'r')
+                                
+                                    with loadedFile:
+                                        txt = loadedFile.read()
+                                    
+                                    payload['text'] = txt
+                                
+                                    r = requests.post(httpAddress + data["data"][lineIndex]["address"], data=payload, verify=False)
+                                
+                                    self.textEdit.append("POST Request \"" + data["data"][lineIndex]['title'] + "\":")
+                                    self.textEdit.append(r.url + "\n")
+                                    self.textEdit.append("API response:")
+                                    self.textEdit.append(r.text)
+                                    self.textEdit.append("\n")
+                                
+                                    uuidTxt = str(r.json()["results"])
+                                    txtFileUUID.append(uuidTxt[2:(len(uuidTxt)-2)])
+                            
+                        
+                        #File upload  
+                        elif data["data"][lineIndex]["params"][payIndex]["name"] == "filersc":
+                            
+                            global testFilePath
+                            global uploadFileUUID
+                            
+                            if len(testFilePath) == 0:
+                                self.textEdit.append("No file was selected\n")
+                                
+                            elif len(testFilePath) >= 1:
+                                
+                                for fileIndex in range(len(testFilePath)):
+                                
+                                    loadedFile = {'@upload': open(testFilePath[fileIndex], 'rb')}
+                                
+                                    r = requests.post(httpAddress + data["data"][lineIndex]["address"], files = loadedFile, data = payload, verify=False)
+                                
+                                    self.textEdit.append("POST Request \"" + data["data"][lineIndex]['title'] + "\":")
+                                    self.textEdit.append(r.url + "\n")
+                                    self.textEdit.append("API response:")
+                                    self.textEdit.append(r.text)
+                                    self.textEdit.append("\n")
+                                
+                                    uuidFile = str(r.json()["results"])
+                                    uploadFileUUID.append(uuidFile[2:(len(uuidFile)-2)])
+                    
+                 
+                 
+                 
                     
                 #Delete line code
                 if data["data"][lineIndex]["method"] == 'del': 
                     print("we have a deleter in line: " + str(lineIndex + 1))
+                    
+                
+                if errorFlag == 1:
+                    break
     
-            
-        #index = r.text.split('"')
-        #userID = index[17]
-        #userName = index[21]
-        #userUUID = index[29]
-        
+                self.progressBar.setValue((100/(len(data["data"]))*(lineIndex+1)))
+                time.sleep(0.5)
+
         
         
     def file_open(self):
@@ -189,7 +274,12 @@ class JsonCreator(QtGui.QMainWindow, jsoncreator.Ui_JsonCreator):
         
             
     def new_file(self):
-        self.textEditFileLoad.setText('{"data":[{"oid":"1",}]}')
+        self.textEditFileLoad.setText('{"data":[{"method":"<GET/POST/DELETE>","address":"<spesific address>","title":"<name of the test>"' + 
+        ',"params":[' +
+        '"secret_key",' +
+        '"public_key",' +
+        '{"name":"<any param to send>","value":"<any param value>"}],' +
+        '"find":[],"check":[],"value":[]}]}')
         
     def save_file(self):
         fileName = QtGui.QFileDialog.getSaveFileName(self, 'Save File', '.json','*.json')
@@ -200,7 +290,12 @@ class JsonCreator(QtGui.QMainWindow, jsoncreator.Ui_JsonCreator):
         
         
     def edit_file(self):
-        self.textEditFileLoad.setText('"method":"<GET/POST>","address":"<enter address>"}')
+        self.textEditFileLoad.setText(',{"method":"<GET/POST/DELETE>","address":"<spesific address>","title":"<name of the test>"' + 
+        ',"params":[' +
+        '"secret_key",' +
+        '"public_key",' +
+        '{"name":"<any param to send>","value":"<any param value>"}],' +
+        '"find":[],"check":[],"value":[]}')
         
     def saveNewLine_file(self):
         
@@ -213,8 +308,8 @@ class JsonCreator(QtGui.QMainWindow, jsoncreator.Ui_JsonCreator):
             text = loadedFile.read()
             
         #find index number
-        textSplit = text.split('oid')
-        newIndex = len(textSplit)
+        #textSplit = text.split('oid')
+        #newIndex = len(textSplit)
         
         #prepare to write
         loadedFile = open(nameOfFile, 'w')
@@ -224,7 +319,7 @@ class JsonCreator(QtGui.QMainWindow, jsoncreator.Ui_JsonCreator):
         fileEnd = len(text)-2
         
         #create new text
-        newText = text[:fileEnd] + ',{"oid":"' + str(newIndex) + '",' + currentText + text[fileEnd:]
+        newText = text[:fileEnd] + currentText + text[fileEnd:]
         
         #overwrite the existing file with new content
         loadedFile.write(newText)

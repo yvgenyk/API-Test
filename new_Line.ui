@@ -106,7 +106,7 @@
           <item>
            <widget class="QLabel" name="label_21">
             <property name="text">
-             <string>Public Key:</string>
+             <string>Public Key: </string>
             </property>
            </widget>
           </item>

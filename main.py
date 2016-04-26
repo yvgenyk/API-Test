@@ -194,31 +194,36 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                         #File upload  
                         elif data["data"][lineIndex]["params"][payIndex]["name"] == "filersc":
                             
+                            if data["data"][lineIndex]["params"][payIndex]["value"] == "empty":
+                                pass
+                            elif data["data"][lineIndex]["params"][payIndex]["value"] == "nokey":
+                                pass
                             
-                            if len(testFilePath) == 0:
-                                self.textEdit.append("No file was selected\n")
+                            else:
+                                if len(testFilePath) == 0:
+                                    self.textEdit.append("No file was selected\n")
                                 
-                            elif len(testFilePath) >= 1:
+                                elif len(testFilePath) >= 1:
                                 
-                                for fileIndex in range(len(testFilePath)):
+                                    for fileIndex in range(len(testFilePath)):
                                 
-                                    loadedFile = {'@upload': open(testFilePath[fileIndex], 'rb')}
+                                        loadedFile = {'@upload': open(testFilePath[fileIndex], 'rb')}
                                 
-                                    r = requests.post(httpAddress + data["data"][lineIndex]["address"], files = loadedFile, data = payload, verify=False)
-                                    if r.status_code == 200:
-                                        self.textEdit.append("POST Request \"" + data["data"][lineIndex]['title'] + "\":")
-                                        self.textEdit.append(r.url + "\n")
-                                        self.textEdit.append("API response:")
-                                        self.textEdit.append(r.text)
-                                        self.textEdit.append("\n")
+                                        r = requests.post(httpAddress + data["data"][lineIndex]["address"], files = loadedFile, data = payload, verify=False)
+                                        if r.status_code == 200:
+                                            self.textEdit.append("POST Request \"" + data["data"][lineIndex]['title'] + "\":")
+                                            self.textEdit.append(r.url + "\n")
+                                            self.textEdit.append("API response:")
+                                            self.textEdit.append(r.text)
+                                            self.textEdit.append("\n")
                                 
-                                        uuidFile = str(r.json()["results"])
-                                        uploadFileUUID.append(uuidFile[2:(len(uuidFile)-2)])
-                                        uploadedrscFlag = True
+                                            uuidFile = str(r.json()["results"])
+                                            uploadFileUUID.append(uuidFile[2:(len(uuidFile)-2)])
+                                            uploadedrscFlag = True
                     
-                                    else:
-                                        self.textEdit.append("Error: %d" % r.status_code)
-                                        errorFlag == 1
+                                        else:
+                                            self.textEdit.append("Error: %d" % r.status_code)
+                                            errorFlag == 1
                  
                         
                         elif data["data"][lineIndex]["params"][payIndex]["name"] == "sources":
@@ -408,6 +413,8 @@ class NewLine(QtGui.QMainWindow, new_line.Ui_NewLine):
         
         self.saveBtn.clicked.connect(self.saveNewLine_file)
         self.closeBtn.clicked.connect(self.close_window)
+        self.sKey.setText('secret_key')
+        self.pKey.setText('public_key')
         
         
         
@@ -433,17 +440,63 @@ class NewLine(QtGui.QMainWindow, new_line.Ui_NewLine):
         loadedFile = open(nameOfFile, 'w')
         
         line = (',{\"method\":\"' + self.newMethod.text() + '\",\"address\":\"' + self.newAddress.text() + '\",\"title\":\"' + 
-                self.newTitle.text() + '\",\"params\":[\"' + self.sKey.text() + '\",\"' + self.pKey.text() + '\",{\"name\":\"' + 
-                self.p_one_name.text() + '\",\"value\":\"' + self.p_one_value.text() + '\"},{\"name\":\"' + self.p_two_name.text() + 
-                '\",\"value\":\"' + self.p_two_value.text() + '\"},{\"name\":\"' + self.p_three_name.text() + '\",\"value\":\"' + 
-                self.p_three_value.text() + '\"},{\"name\":\"' + self.p_four_name.text() + '\",\"value\":\"' + self.p_four_value.text() + 
-                '\"},{\"name\":\"' + self.p_five_name.text() + '\",\"value\":\"' + self.p_five_value.text() + '\"},{\"name\":\"' + 
-                self.p_six_name.text() + '\",\"value\":\"' + self.p_six_value.text() + '\"},{\"name\":\"' + self.p_seven_name.text() + 
-                '\",\"value\":\"' + self.p_seven_value.text() + '\"},{\"name\":\"' + self.p_eight_name.text() + '\",\"value\":\"' + 
-                self.p_eight_value.text() + '\"}],\"find\":[\"' + self.findOne.text() + '\",\"' + self.findTwo.text() + '\",\"' + 
-                self.findThree.text() + '\"],\"check\":[\"' + self.check_one_name.text() + '\",\"' + self.check_two_name.text() + '\",\"' +
-                self.check_three_name.text() + '\"],\"value\":[\"' + self.check_one_value.text() + '\",\"' + self.check_two_value.text() + 
-                '\",\"' + self.check_three_value.text() + '\"]}')
+                self.newTitle.text() + '\",\"params\":[\"' + self.sKey.text() + '\",\"' + self.pKey.text() + '\"]}')
+                
+        if self.p_one_name.text() != '':
+            line = (line[:len(line)-2] + ',{\"name\":\"' + self.p_one_name.text() + '\",\"value\":\"' + self.p_one_value.text() + '\"}' + line[len(line)-2:])
+                
+            if self.p_two_name.text() != '':
+                line = (line[:len(line)-2] + ',{\"name\":\"' + self.p_two_name.text() + '\",\"value\":\"' + self.p_two_value.text() + '\"}' + line[len(line)-2:])   
+                    
+                if self.p_three_name.text() != '':
+                    line = (line[:len(line)-2] + ',{\"name\":\"' + self.p_three_name.text() + '\",\"value\":\"' + self.p_three_value.text() + '\"}' + line[len(line)-2:])
+                
+                    if self.p_four_name.text() != '':
+                        line = (line[:len(line)-2] + ',{\"name\":\"' + self.p_four_name.text() + '\",\"value\":\"' + self.p_four_value.text() + '\"}' + line[len(line)-2:])
+                
+                        if self.p_five_name.text() != '':
+                            line = (line[:len(line)-2] + ',{\"name\":\"' + self.p_five_name.text() + '\",\"value\":\"' + self.p_five_value.text() + '\"}' + line[len(line)-2:])
+                
+                            if self.p_six_name.text() != '':
+                                line = (line[:len(line)-2] + ',{\"name\":\"' + self.p_six_name.text() + '\",\"value\":\"' + self.p_six_value.text() + '\"}'  + line[len(line)-2:])  
+                      
+                                if self.p_seven_name.text() != '':
+                                    line = (line[:len(line)-2] + ',{\"name\":\"' + self.p_seven_name.text() + '\",\"value\":\"' + self.p_seven_value.text() + '\"}' + line[len(line)-2:])
+                
+                                    if self.p_eight_name.text() != '':
+                                        line = (line[:len(line)-2] + ',{\"name\":\"' + self.p_eight_name.text() + '\",\"value\":\"' + self.p_eight_value.text() + '\"}' + line[len(line)-2:])          
+            
+        
+        if self.findOne.text() != '':
+            line = (line[:len(line)-1] + ',\"find\":[\"' + self.findOne.text() + '\"]' + line[len(line)-1:])
+            
+            if self.findTwo.text() != '':
+                line = (line[:len(line)-2] + ',\"' + self.findTwo.text() + '\"' + line[len(line)-2:])
+                
+                if self.findThree.text() != '':
+                    line = (line[:len(line)-2] + ',\"' + self.findThree.text() + '\"' + line[len(line)-2:])
+                
+                 
+        if self.check_one_name.text() != '':
+            line = (line[:len(line)-1] + ',\"check\":[\"' + self.check_one_name.text() + '\"]' + line[len(line)-1:])
+            
+            if self.check_two_name.text() != '':
+                line = (line[:len(line)-2] + ',\"' + self.check_two_name.text() + '\"' + line[len(line)-2:])
+                
+                if self.check_three_name.text() != '':
+                    line = (line[:len(line)-2] + ',\"' + self.check_three_name.text() + '\"' + line[len(line)-2:])
+                    
+                    
+        if self.check_one_value.text() != '':
+            line = (line[:len(line)-1] + ',\"value\":[\"' + self.check_one_value.text() + '\"]' + line[len(line)-1:])
+            
+            if self.check_two_value.text() != '':
+                line = (line[:len(line)-2] + ',\"' + self.check_two_value.text() + '\"' + line[len(line)-2:])
+                
+                if self.check_three_value.text() != '':
+                    line = (line[:len(line)-2] + ',\"' + self.check_three_value.text() + '\"' + line[len(line)-2:])
+            
+
         
         #find the place where to add the new line
         fileEnd = len(text)-2

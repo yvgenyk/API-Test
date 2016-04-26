@@ -377,7 +377,7 @@ class Ui_NewLine(object):
         self.label_3.setText(_translate("NewLine", "Title:", None))
         self.label_22.setText(_translate("NewLine", "                                                            Params:", None))
         self.label_20.setText(_translate("NewLine", "Secret Key:", None))
-        self.label_21.setText(_translate("NewLine", "Public Key:", None))
+        self.label_21.setText(_translate("NewLine", "Public Key: ", None))
         self.label_4.setText(_translate("NewLine", "Name:", None))
         self.label_5.setText(_translate("NewLine", "Value:", None))
         self.label_6.setText(_translate("NewLine", "Name:", None))

@@ -64,31 +64,6 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="saveNewToFile">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>97</horstretch>
-          <verstretch>60</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>97</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>97</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Add New Line</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QPushButton" name="loadExFileBtn">
         <property name="minimumSize">
          <size>

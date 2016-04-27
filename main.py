@@ -32,6 +32,7 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
         testFile = None
         
         
+        
         self.json_work = None
         self.new_line_window = None
         self.startBtn.clicked.connect(self.start_test)
@@ -74,7 +75,7 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
             httpAddress = self.lineEdit_3.text()
             payload = dict() 
             errorFlag = 0
-            
+            prevResponse = {}
             
             with open(testFile) as codeLines_data:
                 data = json.load(codeLines_data)
@@ -100,6 +101,9 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                             
                     r = requests.get(httpAddress + data["data"][lineIndex]["address"], params=payload, verify=False)
                     
+                    if data["data"][lineIndex]["save"] == '1':
+                        prevResponse = r.json()
+                    
                     if r.status_code == 200:
                         self.textEdit.append("GET Request \"" + data["data"][lineIndex]['title'] + "\":")
                         self.textEdit.append(r.url + "\n")
@@ -116,19 +120,33 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                                     errorFlag = 1
                     
                         if len(data["data"][lineIndex]['check']) >= 1:
-                            for checkIndex in range(len(data["data"][lineIndex]['check'])):
-                                varToCheck = data["data"][lineIndex]["check"][checkIndex]
-                           
-                                if data["data"][lineIndex]['value'][checkIndex] == str(r.json()["status"][varToCheck]):
-                                    pass
+                            valIndex = 0
+                            
+                            for checkIndex in range(len(data["data"][lineIndex]['value'])):
+                                if data["data"][lineIndex]["check"][checkIndex] == 'prev':
+                                    checkIndex += 1
+                                    varToCheck = data["data"][lineIndex]["check"][checkIndex]
+                                
+                                    if data["data"][lineIndex]['value'][valIndex] == str(prevResponse["status"][varToCheck]):
+                                        valIndex += 1
+                                    else:
+                                        self.textEdit.append("\n\n There was a problem: " + data["data"][lineIndex]["check"][checkIndex] + 
+                                                             ": " + data["data"][lineIndex]["value"][valIndex] + " wasn't found in :\n" + r.text)
+                                        errorFlag = 1
+                                        
                                 else:
-                                    self.textEdit.append("\n\n There was a problem: " + data["data"][lineIndex]["check"][checkIndex] + 
-                                                         ": " + data["data"][lineIndex]["value"][checkIndex] + " wasn't found in :\n" + r.text)
-                                    errorFlag = 1
+                                    varToCheck = data["data"][lineIndex]["check"][checkIndex]
+                                
+                                    if data["data"][lineIndex]['value'][valIndex] == str(r.json()["status"][varToCheck]):
+                                        valIndex += 1
+                                    else:
+                                        self.textEdit.append("\n\n There was a problem: " + data["data"][lineIndex]["check"][checkIndex] + 
+                                                             ": " + data["data"][lineIndex]["value"][checkIndex] + " wasn't found in :\n" + r.text)
+                                        errorFlag = 1
                     
                     else:
                         self.textEdit.append("Error: %d" % r.status_code)
-                        errorFlag == 1
+                        errorFlag = 1
                     
                     
                     
@@ -188,7 +206,7 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                                             
                                         else:
                                             self.textEdit.append("Error: %d" % r.status_code)
-                                            errorFlag == 1
+                                            errorFlag = 1
                             
                         
                         #File upload  
@@ -223,7 +241,7 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                     
                                         else:
                                             self.textEdit.append("Error: %d" % r.status_code)
-                                            errorFlag == 1
+                                            errorFlag = 1
                  
                         
                         elif data["data"][lineIndex]["params"][payIndex]["name"] == "sources":
@@ -278,28 +296,34 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                                     
                         else:
                             self.textEdit.append("Error: %d" % r.status_code)
-                            errorFlag == 1
+                            errorFlag = 1
                          
                          
                          
-                    if len(data["data"][lineIndex]['find']) >= 1:
-                        for findIndex in range(len(data["data"][lineIndex]['find'])):
-                            if data["data"][lineIndex]['find'][findIndex] in r.text:
-                                pass
-                            else:
-                                self.textEdit.append("\n\n There was a problem: " + data["data"][lineIndex]['find'][findIndex] + " wasn't found in :\n" + r.text)
-                                errorFlag = 1
-                    
                     if len(data["data"][lineIndex]['check']) >= 1:
-                        for checkIndex in range(len(data["data"][lineIndex]['check'])):
-                            varToCheck = data["data"][lineIndex]["check"][checkIndex]
-                           
-                            if data["data"][lineIndex]['value'][checkIndex] == str(r.json()["status"][varToCheck]):
-                                pass
-                            else:
-                                self.textEdit.append("\n\n There was a problem: " + data["data"][lineIndex]["check"][checkIndex] + 
-                                                    ": " + data["data"][lineIndex]["value"][checkIndex] + " wasn't found in :\n" + r.text)
-                                errorFlag = 1
+                            valIndex = 0
+                            
+                            for checkIndex in range(len(data["data"][lineIndex]['value'])):
+                                if data["data"][lineIndex]["check"][checkIndex] == 'prev':
+                                    checkIndex += 1
+                                    varToCheck = data["data"][lineIndex]["check"][checkIndex]
+                                
+                                    if data["data"][lineIndex]['value'][valIndex] == str(prevResponse["status"][varToCheck]):
+                                        valIndex += 1
+                                    else:
+                                        self.textEdit.append("\n\n There was a problem: " + data["data"][lineIndex]["check"][checkIndex] + 
+                                                             ": " + data["data"][lineIndex]["value"][valIndex] + " wasn't found in :\n" + r.text)
+                                        errorFlag = 1
+                                        
+                                else:
+                                    varToCheck = data["data"][lineIndex]["check"][checkIndex]
+                                
+                                    if data["data"][lineIndex]['value'][valIndex] == str(r.json()["status"][varToCheck]):
+                                        valIndex += 1
+                                    else:
+                                        self.textEdit.append("\n\n There was a problem: " + data["data"][lineIndex]["check"][checkIndex] + 
+                                                             ": " + data["data"][lineIndex]["value"][checkIndex] + " wasn't found in :\n" + r.text)
+                                        errorFlag = 1
                                     
                                        
                     
@@ -441,8 +465,13 @@ class NewLine(QtGui.QMainWindow, new_line.Ui_NewLine):
         loadedFile = open(nameOfFile, 'w')
         
         line = (',{\"method\":\"' + self.newMethod.text() + '\",\"address\":\"' + self.newAddress.text() + '\",\"title\":\"' + 
-                self.newTitle.text() + '\",\"params\":[\"' + self.sKey.text() + '\",\"' + self.pKey.text() + '\"]}')
-                
+                self.newTitle.text()) 
+        
+        if self.saveForNext.isChecked():
+            line += ('\",\"save\":\"1\",\"params\":[\"' + self.sKey.text() + '\",\"' + self.pKey.text() + '\"]}')
+        else:
+            line += ('\",\"save\":\"0\",\"params\":[\"' + self.sKey.text() + '\",\"' + self.pKey.text() + '\"]}')
+                   
         if self.p_one_name.text() != '':
             line = (line[:len(line)-2] + ',{\"name\":\"' + self.p_one_name.text() + '\",\"value\":\"' + self.p_one_value.text() + '\"}' + line[len(line)-2:])
                 
@@ -468,32 +497,51 @@ class NewLine(QtGui.QMainWindow, new_line.Ui_NewLine):
                                         line = (line[:len(line)-2] + ',{\"name\":\"' + self.p_eight_name.text() + '\",\"value\":\"' + self.p_eight_value.text() + '\"}' + line[len(line)-2:])          
             
         
-        line = (line[:len(line)-1] + ',\"find\":[\"' + self.findOne.text() + '\"]' + line[len(line)-1:])
+        if self.findOne.text() != '':
+            line = (line[:len(line)-1] + ',\"find\":[\"' + self.findOne.text() + '\"]' + line[len(line)-1:])
             
-        if self.findTwo.text() != '':
-            line = (line[:len(line)-2] + ',\"' + self.findTwo.text() + '\"' + line[len(line)-2:])
+            if self.findTwo.text() != '':
+                line = (line[:len(line)-2] + ',\"' + self.findTwo.text() + '\"' + line[len(line)-2:])
                 
-            if self.findThree.text() != '':
-                line = (line[:len(line)-2] + ',\"' + self.findThree.text() + '\"' + line[len(line)-2:])
+                if self.findThree.text() != '':
+                    line = (line[:len(line)-2] + ',\"' + self.findThree.text() + '\"' + line[len(line)-2:])
+        else:
+            line = (line[:len(line)-1] + ',\"find\":[]' + line[len(line)-1:])
                 
-                 
-        line = (line[:len(line)-1] + ',\"check\":[\"' + self.check_one_name.text() + '\"]' + line[len(line)-1:])
+                
+        
+        if self.check_one_name.text() != '':        
+            if self.checkPrevValue_1.isChecked():
+                line = (line[:len(line)-1] + ',\"check\":[\"prev\",\"' + self.check_one_name.text() + '\"]' + line[len(line)-1:])
+        
+            else:         
+                line = (line[:len(line)-1] + ',\"check\":[\"' + self.check_one_name.text() + '\"]' + line[len(line)-1:])
             
-        if self.check_two_name.text() != '':
-            line = (line[:len(line)-2] + ',\"' + self.check_two_name.text() + '\"' + line[len(line)-2:])
+            if self.check_two_name.text() != '':
+                if self.checkPrevValue_2.isChecked():
+                    line = (line[:len(line)-2] + ',\"prev\",\"' + self.check_two_name.text() + '\"' + line[len(line)-2:])
+                else:    
+                    line = (line[:len(line)-2] + ',\"' + self.check_two_name.text() + '\"' + line[len(line)-2:])
                 
             if self.check_three_name.text() != '':
-                line = (line[:len(line)-2] + ',\"' + self.check_three_name.text() + '\"' + line[len(line)-2:])
+                if self.checkPrevValue_3.isChecked():
+                    line = (line[:len(line)-2] + ',\"prev\",\"' + self.check_three_name.text() + '\"' + line[len(line)-2:])
+                else:
+                    line = (line[:len(line)-2] + ',\"' + self.check_three_name.text() + '\"' + line[len(line)-2:])
+        else:
+             line = (line[:len(line)-1] + ',\"check\":[]' + line[len(line)-1:])
                     
-                    
-        line = (line[:len(line)-1] + ',\"value\":[\"' + self.check_one_value.text() + '\"]' + line[len(line)-1:])
+        
+        if self.check_one_value.text() != '':            
+            line = (line[:len(line)-1] + ',\"value\":[\"' + self.check_one_value.text() + '\"]' + line[len(line)-1:])
             
-        if self.check_two_value.text() != '':
-            line = (line[:len(line)-2] + ',\"' + self.check_two_value.text() + '\"' + line[len(line)-2:])
+            if self.check_two_value.text() != '':
+                line = (line[:len(line)-2] + ',\"' + self.check_two_value.text() + '\"' + line[len(line)-2:])
                 
-            if self.check_three_value.text() != '':
-                line = (line[:len(line)-2] + ',\"' + self.check_three_value.text() + '\"' + line[len(line)-2:])
-            
+                if self.check_three_value.text() != '':
+                    line = (line[:len(line)-2] + ',\"' + self.check_three_value.text() + '\"' + line[len(line)-2:])
+        else:
+            line = (line[:len(line)-1] + ',\"value\":[]' + line[len(line)-1:])
 
         
         #find the place where to add the new line

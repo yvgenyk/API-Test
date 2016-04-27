@@ -241,6 +241,7 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                                 
                                 elif len(txtFileUUID)==0:
                                     self.textEdit.append("No text resources found!")
+                                    errorFlag =1
                                     
                             #File sources
                             else:
@@ -467,34 +468,31 @@ class NewLine(QtGui.QMainWindow, new_line.Ui_NewLine):
                                         line = (line[:len(line)-2] + ',{\"name\":\"' + self.p_eight_name.text() + '\",\"value\":\"' + self.p_eight_value.text() + '\"}' + line[len(line)-2:])          
             
         
-        if self.findOne.text() != '':
-            line = (line[:len(line)-1] + ',\"find\":[\"' + self.findOne.text() + '\"]' + line[len(line)-1:])
+        line = (line[:len(line)-1] + ',\"find\":[\"' + self.findOne.text() + '\"]' + line[len(line)-1:])
             
-            if self.findTwo.text() != '':
-                line = (line[:len(line)-2] + ',\"' + self.findTwo.text() + '\"' + line[len(line)-2:])
+        if self.findTwo.text() != '':
+            line = (line[:len(line)-2] + ',\"' + self.findTwo.text() + '\"' + line[len(line)-2:])
                 
-                if self.findThree.text() != '':
-                    line = (line[:len(line)-2] + ',\"' + self.findThree.text() + '\"' + line[len(line)-2:])
+            if self.findThree.text() != '':
+                line = (line[:len(line)-2] + ',\"' + self.findThree.text() + '\"' + line[len(line)-2:])
                 
                  
-        if self.check_one_name.text() != '':
-            line = (line[:len(line)-1] + ',\"check\":[\"' + self.check_one_name.text() + '\"]' + line[len(line)-1:])
+        line = (line[:len(line)-1] + ',\"check\":[\"' + self.check_one_name.text() + '\"]' + line[len(line)-1:])
             
-            if self.check_two_name.text() != '':
-                line = (line[:len(line)-2] + ',\"' + self.check_two_name.text() + '\"' + line[len(line)-2:])
+        if self.check_two_name.text() != '':
+            line = (line[:len(line)-2] + ',\"' + self.check_two_name.text() + '\"' + line[len(line)-2:])
                 
-                if self.check_three_name.text() != '':
-                    line = (line[:len(line)-2] + ',\"' + self.check_three_name.text() + '\"' + line[len(line)-2:])
+            if self.check_three_name.text() != '':
+                line = (line[:len(line)-2] + ',\"' + self.check_three_name.text() + '\"' + line[len(line)-2:])
                     
                     
-        if self.check_one_value.text() != '':
-            line = (line[:len(line)-1] + ',\"value\":[\"' + self.check_one_value.text() + '\"]' + line[len(line)-1:])
+        line = (line[:len(line)-1] + ',\"value\":[\"' + self.check_one_value.text() + '\"]' + line[len(line)-1:])
             
-            if self.check_two_value.text() != '':
-                line = (line[:len(line)-2] + ',\"' + self.check_two_value.text() + '\"' + line[len(line)-2:])
+        if self.check_two_value.text() != '':
+            line = (line[:len(line)-2] + ',\"' + self.check_two_value.text() + '\"' + line[len(line)-2:])
                 
-                if self.check_three_value.text() != '':
-                    line = (line[:len(line)-2] + ',\"' + self.check_three_value.text() + '\"' + line[len(line)-2:])
+            if self.check_three_value.text() != '':
+                line = (line[:len(line)-2] + ',\"' + self.check_three_value.text() + '\"' + line[len(line)-2:])
             
 
         

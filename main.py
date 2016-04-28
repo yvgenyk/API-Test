@@ -357,7 +357,7 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                     break
     
                 self.progressBar.setValue((100/(len(data["data"]))*(lineIndex+1)))
-                time.sleep(0.5)
+                time.sleep(1)
 
         
         

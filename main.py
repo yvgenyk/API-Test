@@ -38,9 +38,9 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
         self.startBtn.clicked.connect(self.start_test)
         self.pushButton_2.clicked.connect(self.close_application)
         self.fileLoad.clicked.connect(self.file_open)
-        self.lineEdit.setText('')
-        self.lineEdit_2.setText('')
-        self.lineEdit_3.setText('')
+        self.lineEdit.setText('a42d6d5344962e8c9abe0ce365a957e9')
+        self.lineEdit_2.setText('RnTZhBmXMKfrckQwNJC9')
+        self.lineEdit_3.setText('https://oht.vagrant.oht.cc/api/2/')
         self.loadTxtBtn.clicked.connect(self.open_txt)
         self.loadFileBtn.clicked.connect(self.open_test_files)
     
@@ -324,28 +324,26 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                          
                          
                     if len(data["data"][lineIndex]['check']) >= 1:
-                            valIndex = 0
                             
-                            for checkIndex in range(len(data["data"][lineIndex]['value'])):
-                                if data["data"][lineIndex]["check"][checkIndex] == 'prev':
-                                    checkIndex += 1
-                                    varToCheck = data["data"][lineIndex]["check"][checkIndex]
-                                
-                                    if data["data"][lineIndex]['value'][valIndex] == str(prevResponse["status"][varToCheck]):
-                                        valIndex += 1
+                            for valIndex in range(len(data["data"][lineIndex]['value'])):
+                                if data["data"][lineIndex]["check"][valIndex*2] == 'prev':
+                                    varToCheck = data["data"][lineIndex]["check"][(valIndex*2 + 1)]
+                
+                                    if data["data"][lineIndex]['value'][valIndex] == str(r.json()["results"][varToCheck]):
+                                        pass
                                     else:
-                                        self.textEdit.append("\n\n There was a problem: " + data["data"][lineIndex]["check"][checkIndex] + 
+                                        self.textEdit.append("\n\n There was a problem: " + data["data"][lineIndex]["check"][(valIndex*2+1)] + 
                                                              ": " + data["data"][lineIndex]["value"][valIndex] + " wasn't found in :\n" + r.text)
                                         errorFlag = 1
                                         
                                 else:
-                                    varToCheck = data["data"][lineIndex]["check"][checkIndex]
+                                    varToCheck = data["data"][lineIndex]["check"][valIndex]
                                 
-                                    if data["data"][lineIndex]['value'][valIndex] == str(r.json()["status"][varToCheck]):
-                                        valIndex += 1
+                                    if data["data"][lineIndex]['value'][valIndex] == str(r.json()["results"][varToCheck]):
+                                        pass
                                     else:
-                                        self.textEdit.append("\n\n There was a problem: " + data["data"][lineIndex]["check"][checkIndex] + 
-                                                             ": " + data["data"][lineIndex]["value"][checkIndex] + " wasn't found in :\n" + r.text)
+                                        self.textEdit.append("\n\n There was a problem: " + data["data"][lineIndex]["check"][valIndex] + 
+                                                             ": " + data["data"][lineIndex]["value"][valIndex] + " wasn't found in :\n" + r.text)
                                         errorFlag = 1
                                     
                                        

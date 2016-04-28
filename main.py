@@ -75,7 +75,9 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
             httpAddress = self.lineEdit_3.text()
             payload = dict() 
             errorFlag = 0
+            uuidToAddress = 0
             prevResponse = {}
+            prevPayload = ()
             
             with open(testFile) as codeLines_data:
                 data = json.load(codeLines_data)
@@ -98,11 +100,19 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                         else:
                             payload[data["data"][lineIndex]["params"][payIndex]['name']] = data["data"][lineIndex]["params"][payIndex]['value']
                             
-                            
-                    r = requests.get(httpAddress + data["data"][lineIndex]["address"], params=payload, verify=False)
+                    addressCheck = data["data"][lineIndex]["address"]
+                    if addressCheck[len(addressCheck)-4:] == 'uuid':
+                        newAddress = addressCheck[:len(addressCheck)-4] + (str(prevResponse["results"]))[2:(len(prevResponse["results"])-3)]
+                        uuidToAddress = 1
+                        
+                    if uuidToAddress == 1:
+                        r = requests.get(httpAddress + newAddress, params=payload, verify=False)
+                    else:
+                        r = requests.get(httpAddress + data["data"][lineIndex]["address"], params=payload, verify=False)
                     
                     if data["data"][lineIndex]["save"] == '1':
                         prevResponse = r.json()
+                        prevPayload = payload
                     
                     if r.status_code == 200:
                         self.textEdit.append("GET Request \"" + data["data"][lineIndex]['title'] + "\":")
@@ -120,28 +130,26 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                                     errorFlag = 1
                     
                         if len(data["data"][lineIndex]['check']) >= 1:
-                            valIndex = 0
                             
-                            for checkIndex in range(len(data["data"][lineIndex]['value'])):
-                                if data["data"][lineIndex]["check"][checkIndex] == 'prev':
-                                    checkIndex += 1
-                                    varToCheck = data["data"][lineIndex]["check"][checkIndex]
-                                
-                                    if data["data"][lineIndex]['value'][valIndex] == str(prevResponse["status"][varToCheck]):
-                                        valIndex += 1
+                            for valIndex in range(len(data["data"][lineIndex]['value'])):
+                                if data["data"][lineIndex]["check"][valIndex*2] == 'prev':
+                                    varToCheck = data["data"][lineIndex]["check"][(valIndex*2 + 1)]
+                
+                                    if data["data"][lineIndex]['value'][valIndex] == str(r.json()["results"][varToCheck]):
+                                        pass
                                     else:
-                                        self.textEdit.append("\n\n There was a problem: " + data["data"][lineIndex]["check"][checkIndex] + 
+                                        self.textEdit.append("\n\n There was a problem: " + data["data"][lineIndex]["check"][(valIndex*2+1)] + 
                                                              ": " + data["data"][lineIndex]["value"][valIndex] + " wasn't found in :\n" + r.text)
                                         errorFlag = 1
                                         
                                 else:
-                                    varToCheck = data["data"][lineIndex]["check"][checkIndex]
+                                    varToCheck = data["data"][lineIndex]["check"][valIndex]
                                 
-                                    if data["data"][lineIndex]['value'][valIndex] == str(r.json()["status"][varToCheck]):
-                                        valIndex += 1
+                                    if data["data"][lineIndex]['value'][valIndex] == str(r.json()["results"][varToCheck]):
+                                        pass
                                     else:
-                                        self.textEdit.append("\n\n There was a problem: " + data["data"][lineIndex]["check"][checkIndex] + 
-                                                             ": " + data["data"][lineIndex]["value"][checkIndex] + " wasn't found in :\n" + r.text)
+                                        self.textEdit.append("\n\n There was a problem: " + data["data"][lineIndex]["check"][valIndex] + 
+                                                             ": " + data["data"][lineIndex]["value"][valIndex] + " wasn't found in :\n" + r.text)
                                         errorFlag = 1
                     
                     else:
@@ -193,6 +201,11 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                                         payload['text'] = txt
                                 
                                         r = requests.post(httpAddress + data["data"][lineIndex]["address"], data=payload, verify=False)
+                                        
+                                        if data["data"][lineIndex]["save"] == '1':
+                                            prevResponse = r.json()
+                                            prevPayload = payload
+                                        
                                         if r.status_code == 200:
                                             self.textEdit.append("POST Request \"" + data["data"][lineIndex]['title'] + "\":")
                                             self.textEdit.append(r.url + "\n")
@@ -228,6 +241,11 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                                         loadedFile = {'@upload': open(testFilePath[fileIndex], 'rb')}
                                 
                                         r = requests.post(httpAddress + data["data"][lineIndex]["address"], files = loadedFile, data = payload, verify=False)
+                                        
+                                        if data["data"][lineIndex]["save"] == '1':
+                                            prevResponse = r.json()
+                                            prevPayload = payload
+                                        
                                         if r.status_code == 200:
                                             self.textEdit.append("POST Request \"" + data["data"][lineIndex]['title'] + "\":")
                                             self.textEdit.append(r.url + "\n")
@@ -285,6 +303,11 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                     
                     if uploadedrscFlag != True:        
                         r = requests.post(httpAddress + data["data"][lineIndex]["address"], data=payload, verify=False)
+                        
+                        if data["data"][lineIndex]["save"] == '1':
+                            prevResponse = r.json()
+                            prevPayload = payload
+                        
                         if r.status_code == 200:
                             self.textEdit.append("POST Request \"" + data["data"][lineIndex]['title'] + "\":")
                             self.textEdit.append(r.url + "\n")
@@ -421,13 +444,6 @@ class JsonCreator(QtGui.QMainWindow, jsoncreator.Ui_JsonCreator):
         
         self.new_line_window = NewLine()
         self.new_line_window.show()
-        self.textEditFileLoad.setText(',{"method":"<GET/POST/DELETE>","address":"<spesific address>","title":"<name of the test>"' + 
-        ',"params":[' +
-        '"secret_key",' +
-        '"public_key",' +
-        '{"name":"<any param to send>","value":"<any param value>"}],' +
-        '"find":[],"check":[],"value":[]}')
-        
         
         
 class NewLine(QtGui.QMainWindow, new_line.Ui_NewLine):
@@ -456,10 +472,6 @@ class NewLine(QtGui.QMainWindow, new_line.Ui_NewLine):
         #convert to text
         with loadedFile:
             text = loadedFile.read()
-            
-        #find index number
-        #textSplit = text.split('oid')
-        #newIndex = len(textSplit)
         
         #prepare to write
         loadedFile = open(nameOfFile, 'w')

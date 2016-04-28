@@ -38,9 +38,9 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
         self.startBtn.clicked.connect(self.start_test)
         self.pushButton_2.clicked.connect(self.close_application)
         self.fileLoad.clicked.connect(self.file_open)
-        self.lineEdit.setText('a42d6d5344962e8c9abe0ce365a957e9')
-        self.lineEdit_2.setText('RnTZhBmXMKfrckQwNJC9')
-        self.lineEdit_3.setText('https://oht.vagrant.oht.cc/api/2/')
+        self.lineEdit.setText('')
+        self.lineEdit_2.setText('')
+        self.lineEdit_3.setText('')
         self.loadTxtBtn.clicked.connect(self.open_txt)
         self.loadFileBtn.clicked.connect(self.open_test_files)
     

@@ -8,7 +8,7 @@ import re
 import json
 import time
 from new_jasoncreator import JsonCreator
-from class_test import Response
+from class_test import Response, GetMethod
 from doctest import testfile
 from idlelib.ClassBrowser import file_open
 from PyQt4.Qt import QListWidgetItem
@@ -76,7 +76,7 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
             httpAddress = self.lineEdit_3.text()
             payload = dict() 
             errorFlag = 0
-            uuidToAddress = 0
+            #uuidToAddress = 0
             prevResponse = {}
             prevPayload = ()
             
@@ -89,44 +89,10 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                 #Get line code
                 if str.lower(data["data"][lineIndex]["method"]) == 'get':
                     #payload initialization
-                    payload = dict()
-                    for payIndex in range(len(data["data"][lineIndex]['params'])):
                     
-                        if data["data"][lineIndex]["params"][payIndex] == "secret_key":
-                            payload[data["data"][lineIndex]["params"][payIndex]] = secretKey
-                            
-                        elif data["data"][lineIndex]["params"][payIndex] == "public_key":
-                            payload[data["data"][lineIndex]["params"][payIndex]] = publicKey
-                            
-                        else:
-                            payload[data["data"][lineIndex]["params"][payIndex]['name']] = data["data"][lineIndex]["params"][payIndex]['value']
-                            
-                    addressCheck = data["data"][lineIndex]["address"]
-                    if addressCheck[len(addressCheck)-4:] == 'uuid':
-                        newAddress = addressCheck[:len(addressCheck)-4] + (str(prevResponse["results"]))[2:(len(prevResponse["results"])-3)]
-                        uuidToAddress = 1
-                        
-                    if uuidToAddress == 1:
-                        res = Response(requests.get(httpAddress + newAddress, params=payload, verify=False))
-                    else:
-                        res = Response(requests.get(httpAddress + data["data"][lineIndex]["address"], params=payload, verify=False))
-                        
-                    if data["data"][lineIndex]["save"] == '1':
-                        prevResponse = res.responseJson()
-                        prevPayload = payload
-                    
-                    if res.getStatus() == 200:
-                        res.report_line(data["data"][lineIndex]['title'], self.textEdit)
-                    
-                        if len(data["data"][lineIndex]['find']) >= 1:
-                            res.find(data, lineIndex, errorFlag, self.textEdit)
-                    
-                        if len(data["data"][lineIndex]['check']) >= 1:
-                            res.check_value(data, lineIndex, errorFlag, self.textEdit)
-                    
-                    else:
-                        self.textEdit.append("Error: %d" % res.getStatus())
-                        errorFlag = 1
+                    checkLine = GetMethod(data["data"][lineIndex])
+                    checkLine.get_method(secretKey, publicKey, httpAddress, errorFlag, prevResponse, prevPayload, self.textEdit, lineIndex)
+                    #get_method(self, secretKey, secretKey, errorFlag, prevResponse, prevPayload)
                     
                     
                     
@@ -171,7 +137,7 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                                             txt = loadedFile.read()
                                     
                                         payload['text'] = txt
-                                
+                                        
                                         res = Response(requests.post(httpAddress + data["data"][lineIndex]["address"], data=payload, verify=False))
                                         
                                         if data["data"][lineIndex]["save"] == '1':
@@ -207,7 +173,7 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                                     for fileIndex in range(len(testFilePath)):
                                 
                                         loadedFile = {'@upload': open(testFilePath[fileIndex], 'rb')}
-                                
+                                        
                                         res = Response(requests.post(httpAddress + data["data"][lineIndex]["address"], files = loadedFile, data = payload, verify=False))
                                         
                                         if data["data"][lineIndex]["save"] == '1':
@@ -282,10 +248,10 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                             errorFlag = 1
                          
                     if len(data["data"][lineIndex]['find']) >= 1:
-                            res.find(data, lineIndex, errorFlag, self.textEdit)     
+                            res.find(data["data"][lineIndex], lineIndex, errorFlag, self.textEdit)     
                          
                     if len(data["data"][lineIndex]['check']) >= 1:
-                            res.check_value(data, lineIndex, errorFlag, self.textEdit)
+                            res.check_value(data["data"][lineIndex], lineIndex, errorFlag, self.textEdit)
                                                    
                     
                 #Delete line code

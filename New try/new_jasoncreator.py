@@ -20,18 +20,14 @@ class JsonCreator(QtGui.QMainWindow, jsoncreator.Ui_JsonCreator):
         self.close()
         
     def load_file(self):
-        #global testFile
+    
         self.testFile = QtGui.QFileDialog.getOpenFileName(self, 'Open File', "*.json")
         loadedFile = open(self.testFile, 'r')
         
         with loadedFile:
             text = loadedFile.read()
-            
-            textSplit = text.split('oid')
-            index = len(textSplit)
             self.textEditFileLoad.setText(text)
             
-        #return testFile
             
     def new_file(self):
         self.textEditFileLoad.setText('{"data":[{"method":"<GET/POST/DELETE>","address":"<spesific address>","title":"<name of the test>"' + 

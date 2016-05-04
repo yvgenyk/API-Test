@@ -184,14 +184,22 @@ class GetMethod:
                 errorFlag = 1
         
         
-
-
+"""""""""""""""""""""""""""""""""""""""""""""""""""
+                    Post Method
+                    
+    This class is handling all the POST requests
+                    
+                    
+"""""""""""""""""""""""""""""""""""""""""""""""""""
 class PostMethod:
     
     def __init__(self, data):
             self.testLine = data
     
-    
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    This is the main method, gets the line to execute and 
+    sort between the types of requests.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""
     def post_method(self, secretKey, publicKey, httpAddress, txtFilePath, txtFileUUID, testFilePath, uploadFileUUID, prevResponse, prevPayload, textEdit, errorFlag):
         payload = dict()
         uploadedrscFlag = [False]
@@ -242,7 +250,9 @@ class PostMethod:
                 
         
         
-        
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+      This method will upload a free text resource from file.
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""    
     def text_upload(self, httpAddress, payIndex, payload, txtFilePath, textEdit, prevResponse, prevPayload, txtFileUUID, uploadedrscFlag, errorFlag):    
         
         if self.testLine["params"][payIndex]["value"] == "empty":
@@ -283,7 +293,9 @@ class PostMethod:
                         textEdit.append("Error: %d" % res.getStatus())
                         errorFlag = 1
         
-
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+            This method will upload a file resource
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""
     def file_upload(self, httpAddress, payload, payIndex, testFilePath, textEdit, prevResponse, prevPayload, uploadFileUUID, uploadedrscFlag, errorFlag):   
         
         if self.testLine["params"][payIndex]["value"] == "empty":
@@ -319,7 +331,11 @@ class PostMethod:
                         textEdit.append("Error: %d" % res.getStatus())
                         errorFlag = 1     
     
-     
+     """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+     This method is for requests that need resource UUID to
+     execute. The method will check which type of resource is
+     needed (Text or File) and execute the request.
+     """""""""""""""""""""""""""""""""""""""""""""""""""""""""
     def ex_resource(self, payload, txtFileUUID, uploadFileUUID, textEdit, errorFlag):   
         
         #Text sources

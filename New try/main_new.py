@@ -75,7 +75,7 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
             publicKey = self.lineEdit_2.text()
             httpAddress = self.lineEdit_3.text()
             payload = dict() 
-            errorFlag = 0
+            errorFlag = [False]
             #uuidToAddress = 0
             prevResponse = {}
             prevPayload = ()
@@ -91,14 +91,12 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                     #payload initialization
                     
                     checkLine = GetMethod(data["data"][lineIndex])
-                    print("\n\nMain Get" + str(prevResponse)+"\n\n")
                     checkLine.get_method(secretKey, publicKey, httpAddress, errorFlag, prevResponse, prevPayload, self.textEdit, lineIndex)
 
                 #Post line code
                 elif str.lower(data["data"][lineIndex]["method"]) == 'post': 
                     checkLine = PostMethod(data["data"][lineIndex]) 
                     checkLine.post_method(secretKey, publicKey, httpAddress, txtFilePath, txtFileUUID, testFilePath, uploadFileUUID, prevResponse, prevPayload, self.textEdit, errorFlag) 
-                    print("\n\nMain Post" + str(prevResponse)+"\n\n")   
                                                    
                     
                 #Delete line code
@@ -106,7 +104,7 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                     print("we have a deleter in line: " + str(lineIndex + 1))
                     
                 
-                if errorFlag == 1:
+                if errorFlag[0] == True:
                     break
     
                 self.progressBar.setValue((100/(len(data["data"]))*(lineIndex+1)))

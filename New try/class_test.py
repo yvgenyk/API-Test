@@ -57,11 +57,8 @@ class Response:
     of the program for later review.
     """""""""""""""""""""""""""""""""""""""""""""""""""""
     def report_line(self, title, textEdit, method):
-        textEdit.append(method + " Request \"" + title + "\":")
-        textEdit.append(self.responseURL + "\n")
-        textEdit.append("API response:")
-        textEdit.append(self.responseText)
-        textEdit.append("\n")
+        textEdit.append("------------------------------------------------------------------------------------------------------------------------------------------------------------------\n" + 
+                        method + " Request \"" + title + "\":\n" + self.responseURL + "\n\nAPI response:\n" + self.responseText)
         
     """""""""""""""""""""""""""""""""""""""""""""""""""""
     Find method, if there is a request to find something 
@@ -90,7 +87,7 @@ class Response:
                 else:
                     textEdit.append("\n\n There was a problem: " + data["check"][(valIndex*2+1)] + 
                                     ": " + data["value"][valIndex] + " wasn't found in :\n" + self.getText())
-                    errorFlag = 1
+                    errorFlag[0] = True
             #Else will check the provided values by the user against the response.                            
             else:
                 varToCheck = data["check"][valIndex]
@@ -100,7 +97,7 @@ class Response:
                 else:
                     textEdit.append("\n\n There was a problem: " + data["check"][valIndex] + 
                                     ": " + data["value"][valIndex] + " wasn't found in :\n" + self.getText())
-                    errorFlag = 1
+                    errorFlag[0] = True
         
         
         
@@ -152,7 +149,6 @@ class GetMethod:
             """""""""""""""""""""""""""""""""""""""""
             addressCheck = self.testLine["address"]
             if addressCheck[len(addressCheck)-4:] == 'uuid':
-                print("\n\n" + str(prevResponse)+"\n\n")
                 newAddress = addressCheck[:len(addressCheck)-4] + (str(prevResponse[0]["results"]))[2:(len(prevResponse[0]["results"])-3)]
                 uuidToAddress = 1
                         
@@ -165,7 +161,6 @@ class GetMethod:
             response and the request of the current request
             """""""""""""""""""""""""""""""""""""""""""""""           
             if self.testLine["save"] == '1':
-                print("\n\nBeen here done that\n\n"+ res.getStatus() + "\n\n")
                 prevResponse = res.responseJson()
                 prevPayload = payload
                     
@@ -181,7 +176,7 @@ class GetMethod:
             else:
                 print("\n\n\n get method 500\n\n")
                 textEdit.append("Error: %d" % res.getStatus())
-                errorFlag = 1
+                errorFlag[0] = True
         
         
 """""""""""""""""""""""""""""""""""""""""""""""""""
@@ -238,7 +233,7 @@ class PostMethod:
                 res.report_line(self.testLine['title'], textEdit, "POST")
             else:
                     textEdit.append("Error: %d" % res.getStatus())
-                    errorFlag = 1
+                    errorFlag[0] = True
              
                             
             if len(self.testLine['find']) >= 1:
@@ -291,7 +286,7 @@ class PostMethod:
                                             
                     else:
                         textEdit.append("Error: %d" % res.getStatus())
-                        errorFlag = 1
+                        errorFlag[0] = True
         
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""
             This method will upload a file resource
@@ -317,7 +312,6 @@ class PostMethod:
                                         
                     if self.testLine["save"] == '1':
                         prevResponse[0] = res.getJson()
-                        print("\n\nFile Uploaded" + str(prevResponse[0])+"\n\n")
                         prevPayload = payload
                                         
                     if res.getStatus() == 200:
@@ -329,13 +323,13 @@ class PostMethod:
                     
                     else:
                         textEdit.append("Error: %d" % res.getStatus())
-                        errorFlag = 1     
+                        errorFlag[0] = True    
     
-     """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""
      This method is for requests that need resource UUID to
      execute. The method will check which type of resource is
      needed (Text or File) and execute the request.
-     """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""
     def ex_resource(self, payload, txtFileUUID, uploadFileUUID, textEdit, errorFlag):   
         
         #Text sources
@@ -352,7 +346,7 @@ class PostMethod:
                                 
         elif len(txtFileUUID)==0:
             textEdit.append("No text resources found!")
-            errorFlag =1
+            errorFlag[0] = True
                                     
         #File sources
         else:
@@ -368,6 +362,6 @@ class PostMethod:
                                 
             elif len(uploadFileUUID)==0:
                 textEdit.append("No file resources found!")
-                errorFlag =1
+                errorFlag[0] = True
     
         

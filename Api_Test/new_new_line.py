@@ -102,31 +102,7 @@ class NewLine(QtGui.QMainWindow, new_line.Ui_NewLine):
             if self.dictOfNames[index].currentText() != 'None':
                 line = (line[:len(line) - 2] + ',{\"name\":\"' + self.dictOfNames[index].currentText() +
                         '\",\"value\":\"' + self.dictOfValues[index].currentText() + '\"}' + line[len(line) - 2:])
-        """""""""
-        if self.p_one_name.text() != '':
-            line = (line[:len(line)-2] + ',{\"name\":\"' + self.p_one_name.text() + '\",\"value\":\"' + self.p_one_value.text() + '\"}' + line[len(line)-2:])
-                
-            if self.p_two_name.text() != '':
-                line = (line[:len(line)-2] + ',{\"name\":\"' + self.p_two_name.text() + '\",\"value\":\"' + self.p_two_value.text() + '\"}' + line[len(line)-2:])   
-                    
-                if self.p_three_name.text() != '':
-                    line = (line[:len(line)-2] + ',{\"name\":\"' + self.p_three_name.text() + '\",\"value\":\"' + self.p_three_value.text() + '\"}' + line[len(line)-2:])
-                
-                    if self.p_four_name.text() != '':
-                        line = (line[:len(line)-2] + ',{\"name\":\"' + self.p_four_name.text() + '\",\"value\":\"' + self.p_four_value.text() + '\"}' + line[len(line)-2:])
-                
-                        if self.p_five_name.text() != '':
-                            line = (line[:len(line)-2] + ',{\"name\":\"' + self.p_five_name.text() + '\",\"value\":\"' + self.p_five_value.text() + '\"}' + line[len(line)-2:])
-                
-                            if self.p_six_name.text() != '':
-                                line = (line[:len(line)-2] + ',{\"name\":\"' + self.p_six_name.text() + '\",\"value\":\"' + self.p_six_value.text() + '\"}'  + line[len(line)-2:])  
-                      
-                                if self.p_seven_name.text() != '':
-                                    line = (line[:len(line)-2] + ',{\"name\":\"' + self.p_seven_name.text() + '\",\"value\":\"' + self.p_seven_value.text() + '\"}' + line[len(line)-2:])
-                
-                                    if self.p_eight_name.text() != '':
-                                        line = (line[:len(line)-2] + ',{\"name\":\"' + self.p_eight_name.text() + '\",\"value\":\"' + self.p_eight_value.text() + '\"}' + line[len(line)-2:])          
-        """""""""
+
         
         if self.findOne.text() != '':
             line = (line[:len(line)-1] + ',\"find\":[\"' + self.findOne.text() + '\"]' + line[len(line)-1:])

@@ -5,6 +5,8 @@ import jsoncreator
 import new_line
 import requests
 import re
+import os
+import shutil
 import json
 import time
 from new_jasoncreator import JsonCreator
@@ -93,7 +95,14 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
             #uuidToAddress = 0
             prevResponse = {}
             prevPayload = ()
-            
+            """""""""""""""""""""""""""
+            Deletes the existing Downloads
+            directory to check up to date
+            files.
+            """""""""""""""""""""""""""
+            if os.path.exists("Downloads"):
+                shutil.rmtree("Downloads")
+
             with open(self.json_work.testFile) as codeLines_data:
                 data = json.load(codeLines_data)
                 
@@ -113,7 +122,7 @@ class TestApp(QtGui.QMainWindow, design.Ui_Dialog):
                     #payload initialization
                     
                     checkLine = GetMethod(data["data"][lineIndex])
-                    checkLine.get_method(secretKey, publicKey, httpAddress, errorFlag, prevResponse, prevPayload, self.textEdit, lineIndex)
+                    checkLine.get_method(secretKey, publicKey, httpAddress, errorFlag, prevResponse, prevPayload, self.textEdit, lineIndex, testFilePath, uploadFileUUID)
 
                 #Post line code
                 elif str.lower(data["data"][lineIndex]["method"]) == 'post': 

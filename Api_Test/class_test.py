@@ -159,6 +159,7 @@ class GetMethod:
             
             uuidToAddress = 0
             payload = dict()
+            downloadResource = 0
             
             """""""""""""""""""""""""""""""""""""""""""""
             Collecting all the data from the instruction 
@@ -206,9 +207,10 @@ class GetMethod:
             if uuidToAddress == 1:
                 res = Response(requests.get(httpAddress + newAddress, params=payload, verify=False), textEdit)
 
-            """""""""""""""""""""""""""""""""""""""""
-            Download method for both files and text.
-            """""""""""""""""""""""""""""""""""""""""
+                """""""""""""""""""""""""""""""""""""""""
+                Download method for both files and text.
+                """""""""""""""""""""""""""""""""""""""""
+            
             elif downloadResource == 1:
                 res = requests.get(httpAddress + newAddress,stream=True ,params=payload, verify=False)
 

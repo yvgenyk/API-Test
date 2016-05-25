@@ -1,10 +1,31 @@
 from PyQt4 import QtGui, QtCore
-import design
+import main_design
 import requests
+import os
 import json
 import time
 import re
+from PyQt4.QtCore import QThread, SIGNAL
+
+
+class PrintLines(QtCore.QThread):
+    def __init__(self, text):
+        QtCore.QThread.__init__(self)
+        self.text = text
+        self.index = 2
+
         
+    def run(self):
+        for i in range(self.index):
+            print("\n\nHello\n")
+            self.emit(SIGNAL("AppendText(QString)"))
+            self.sleep(2)
+
+            
+            
+            
+            
+                    
 """""""""""""""""""""""""""""""""""""""""""""
                     Response
 
@@ -18,7 +39,9 @@ class Response:
     Initializing the object with
     the basic thing for the program.
     """""""""""""""""""""""""""""""""
-    def __init__(self, res):
+    def __init__(self, res, textEdit):
+
+        self.textEdit = textEdit
         self.r = res
         self.responseURL = self.r.url
         self.responseStatus = self.r.status_code
@@ -57,8 +80,19 @@ class Response:
     of the program for later review.
     """""""""""""""""""""""""""""""""""""""""""""""""""""
     def report_line(self, title, textEdit, method):
-        textEdit.append("------------------------------------------------------------------------------------------------------------------------------------------------------------------\n" + 
+        
+        text = ("------------------------------------------------------------------------------------------------------------------------------------------------------------------\n" + 
                         method + " Request \"" + title + "\":\n" + self.responseURL + "\n\nAPI response:\n" + self.responseText)
+        self.textEdit.append(text)
+        
+        #printText = PrintLines(text)
+        #connect(printText, SIGNAL("AppendText(QString)"), self.AppendText)
+        #printText.start()
+
+
+        
+    def AppendText(self):
+          print("\n\nAppended\n\n")
         
     """""""""""""""""""""""""""""""""""""""""""""""""""""
     Find method, if there is a request to find something 
@@ -69,8 +103,11 @@ class Response:
             if data['find'][findIndex] in self.getText():
                 pass
             else:
-                textEdit.append("\n\n There was a problem: " + data['find'][findIndex] + " wasn't found in :\n" + self.getText())
-                errorFlag = 1
+                if len(self.getText()) > 500:
+                    textEdit.append("\n\nError 500, long response\n")
+                else:
+                    textEdit.append("\n\n There was a problem: " + data['find'][findIndex] + " wasn't found in :\n" + self.getText())
+                    errorFlag[0] = True
         
     """""""""""""""""""""""""""""""""""""""""""""""""""""
     Check method, if there is certain values to check 
@@ -118,10 +155,11 @@ class GetMethod:
         everything it needs from the main 
         class and execute the request. 
         """""""""""""""""""""""""""""""""
-        def get_method(self, secretKey, publicKey, httpAddress, errorFlag, prevResponse, prevPayload, textEdit, lineIndex):
+        def get_method(self, secretKey, publicKey, httpAddress, errorFlag, prevResponse, prevPayload, textEdit, lineIndex, testFilePath, uploadFileUUID):
             
             uuidToAddress = 0
             payload = dict()
+            downloadResource = 0
             
             """""""""""""""""""""""""""""""""""""""""""""
             Collecting all the data from the instruction 
@@ -136,7 +174,10 @@ class GetMethod:
                             
                 elif self.testLine["params"][payIndex] == "public_key":
                     payload[self.testLine["params"][payIndex]] = publicKey
-                            
+
+                elif self.testLine["params"][payIndex] == "No Secret Key" or self.testLine["params"][payIndex] == "No Public Key":
+                    pass
+
                 else:
                     payload[self.testLine["params"][payIndex]['name']] = self.testLine["params"][payIndex]['value']
                             
@@ -149,13 +190,76 @@ class GetMethod:
             """""""""""""""""""""""""""""""""""""""""
             addressCheck = self.testLine["address"]
             if addressCheck[len(addressCheck)-4:] == 'uuid':
-                newAddress = addressCheck[:len(addressCheck)-4] + (str(prevResponse[0]["results"]))[2:(len(prevResponse[0]["results"])-3)]
+                newAddress = (addressCheck[:len(addressCheck)-4] +
+                             (str(prevResponse[0]["results"]))[2:(len(prevResponse[0]["results"])-3)])
                 uuidToAddress = 1
-                        
+
+            """""""""""""""""""""""""""""""""""""""""
+            If there is a download resource check
+            this will set a flag for download method.
+            """""""""""""""""""""""""""""""""""""""""
+            if addressCheck[:(len(addressCheck)-4)] == 'download':
+                newAddress = ("resources/" + (str(prevResponse[0]["results"]))[2:(len(prevResponse[0]["results"])-3)] +
+                                "/download")
+                downloadResource = 1
+
+
             if uuidToAddress == 1:
-                res = Response(requests.get(httpAddress + newAddress, params=payload, verify=False))
+                res = Response(requests.get(httpAddress + newAddress, params=payload, verify=False), textEdit)
+
+                """""""""""""""""""""""""""""""""""""""""
+                Download method for both files and text.
+                """""""""""""""""""""""""""""""""""""""""
+            
+            elif downloadResource == 1:
+                res = requests.get(httpAddress + newAddress,stream=True ,params=payload, verify=False)
+
+                #finds the name of the file writen on site.
+                fileName = res.headers['content-disposition']
+                #Creates new download folder to download files into.
+                if not os.path.exists("Downloads"):
+                    os.makedirs("Downloads")
+                #Creating the path for the new downloaded file.
+                path = os.path.join("Downloads", fileName[22:(len(fileName) - 1)])
+                #Saves the file.
+                with open(path, 'wb') as out_file:
+                    out_file.write(res.content)
+
+                """""""""""""""""""""""""""""""""
+                Checking if file was downloaded
+                and the name of the file is correct.
+                """""""""""""""""""""""""""""""""
+                #UUID shortcut.
+                fileUUID = (str([0]["results"]))[2:(len(prevResponse[0]["results"])-3)]
+                #Text file check.
+                if addressCheck == 'downloadText':
+                    #Checking the download directory for the right file name.
+                    if os.path.exists("Downloads/oht_" +
+                                    (str(prevResponse[0]["results"]))[2:(len(prevResponse[0]["results"])-3)] + ".txt"):
+                        textEdit.append("\nText file: oht_" + fileUUID + ".txt was successfully downloaded.\n" )
+                    #If no such file found an error is raised.
+                    else:
+                        textEdit.append("\nError: Text file: oht_" + fileUUID + ".txt wasn't successfully downloaded.\n")
+                        errorFlag[0] = True
+                #File check
+                else:
+                    #Looking through the file uuid array to find the uploaded file index for the files path.
+                    for index in range(len(uploadFileUUID)):
+                        #Comparing the files names - downloaded vs uploaded.
+                        if fileUUID == uploadFileUUID[index]:
+                            fileName = testFilePath[index].split('/')
+                            if os.path.exists("Downloads/" + fileName[len(fileName) - 1]):
+                                textEdit.append("\nFile:" + fileName[len(fileName) - 1] + " was downloaded successfully.\n")
+                            else:
+                                textEdit.append("\nError: File:" + fileName[len(fileName) - 1] + "was not dowloaded.\n")
+                                errorFlag[0] = True
+
+
+
+
+                return
             else:
-                res = Response(requests.get(httpAddress + self.testLine["address"], params=payload, verify=False))
+                res = Response(requests.get(httpAddress + self.testLine["address"], params=payload, verify=False), textEdit)
             """""""""""""""""""""""""""""""""""""""""""""""
             If the save option is checked, will save the
             response and the request of the current request
@@ -174,7 +278,6 @@ class GetMethod:
                     res.check_value(self.testLine, errorFlag, textEdit)
                     
             else:
-                print("\n\n\n get method 500\n\n")
                 textEdit.append("Error: %d" % res.getStatus())
                 errorFlag[0] = True
         
@@ -199,8 +302,11 @@ class PostMethod:
         payload = dict()
         uploadedrscFlag = [False]
         for payIndex in range(len(self.testLine['params'])):
-                    
-            if self.testLine["params"][payIndex] == "secret_key":
+
+            if self.testLine["params"][payIndex] == "No Secret Key" or self.testLine["params"][payIndex] == "No Public Key":
+                pass
+
+            elif self.testLine["params"][payIndex] == "secret_key":
                 payload[self.testLine["params"][payIndex]] = secretKey
                             
             elif self.testLine["params"][payIndex] == "public_key":
@@ -223,7 +329,7 @@ class PostMethod:
                 
                         
         if uploadedrscFlag[0] == False:        
-            res = Response(requests.post(httpAddress + self.testLine["address"], data=payload, verify=False))
+            res = Response(requests.post(httpAddress + self.testLine["address"], data=payload, verify=False), textEdit)
                 
             if self.testLine["save"] == '1':
                 prevResponse[0] = res.getJson()
@@ -246,7 +352,7 @@ class PostMethod:
         
         
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-      This method will upload a free text resource from file.
+      This method will upload a text resource from file.
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""    
     def text_upload(self, httpAddress, payIndex, payload, txtFilePath, textEdit, prevResponse, prevPayload, txtFileUUID, uploadedrscFlag, errorFlag):    
         
@@ -271,7 +377,7 @@ class PostMethod:
                                     
                     payload['text'] = txt
                                         
-                    res = Response(requests.post(httpAddress + self.testLine["address"], data=payload, verify=False))
+                    res = Response(requests.post(httpAddress + self.testLine["address"], data=payload, verify=False), textEdit)
                                         
                     if self.testLine["save"] == '1':
                         prevResponse[0] = res.getJson()
@@ -308,7 +414,7 @@ class PostMethod:
                                 
                     loadedFile = {'@upload': open(testFilePath[fileIndex], 'rb')}
                                         
-                    res = Response(requests.post(httpAddress + self.testLine["address"], files = loadedFile, data = payload, verify=False))
+                    res = Response(requests.post(httpAddress + self.testLine["address"], files = loadedFile, data = payload, verify=False), textEdit)
                                         
                     if self.testLine["save"] == '1':
                         prevResponse[0] = res.getJson()
